@@ -25,7 +25,7 @@ fprintf(fid,'%d. karedeki hiz: %3.3f \n',1,0);
 hizlar=zeros(length(H),1);
 
 for i=2:length(H)-1
-    hiz=(H(i+1,2)-H(i-1,2))/100/(2/25);
+    hiz=(H(i+1,2)-H(i-1,2))/(0.04)/100;
     hizlar(i,1)=hiz;
     
     fprintf(fid,'%d. karedeki hiz: %3.3f m/s \n',i,hiz);
@@ -38,10 +38,10 @@ if fid<0
 end
 fprintf(fid,'%d. karedeki ivme: %3.3f m/s2 \n',1,0);
 ivmeler=zeros(length(H),1);
-ivmeler(1,1)=0;
-
+ivmeler(1,1)=-9.81;
+ivmeler(30,1)=-9.81;
 for i=2:length(H)-1
-    ivme=(hizlar(i+1,1)-hizlar(i-1,1))/(2/25);
+    ivme=(hizlar(i+1,1)-hizlar(i-1,1))/(0.04);
     ivmeler(i,1)=ivme;
     fprintf(fid,'%d. karedeki ivme: %3.3f m/s2 \n',i,ivme);
 end
