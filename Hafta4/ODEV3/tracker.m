@@ -1,17 +1,15 @@
 
-%load the tracking
 load('raw_marker_detections.mat')
 
 a=VideoReader('salto.avi');
-
+aviObj=VideoWriter('salto_tracked','MPEG-4');
+aviObj.FrameRate=25;
+open(aviObj);
 
 %% define main variables for KALMAN FILTER! :P
-dt = 1;  %our sampling rate
-S_frame = 5 % find(cellfun(@length, X)>11,1); %starting frame
+dt = 1;  % sampling rate
+S_frame = 1 %starting frame
 
-%now, since we have multiple flies, we need a way to deal with a changing
-%number of estimates! this way seems more clear for a tutorial I think, but
-%there is probably a much more efficient way to do it.
 
 u = 0; % define acceleration magnitude to start
 HexAccel_noise_mag = 1; %process noise: the variability in how fast the Hexbug is speeding up (stdv of acceleration: meters/sec^2)
@@ -22,7 +20,7 @@ Ex = [dt^4/4 0 dt^3/2 0; ...
     0 dt^4/4 0 dt^3/2; ...
     dt^3/2 0 dt^2 0; ...
     0 dt^3/2 0 dt^2].*HexAccel_noise_mag^2; % Ex convert the process noise (stdv) into covariance matrix
-P = Ex; % estimate of initial Hexbug position variance (covariance matrix)
+P = Ex; % estimate of initial marker position variance (covariance matrix)
 
 %% Define update equations in 2-D! (Coefficent matrices): A physics based model for where we expect the HEXBUG to be [state transition (state + velocity)] + [input control (acceleration)]
 A = [1 0 dt 0; 0 1 0 dt; 0 0 1 0; 0 0 0 1]; %state update matrice
@@ -158,7 +156,7 @@ for t = 1:a.NumberOfFrames-1;
             axis off
         end
     end
-    pause
+%     pause
     %}
     
     t
@@ -192,13 +190,15 @@ for t = 1:a.NumberOfFrames-1 %S_frame:length(f_list)
         end
     end
     t
-    pause
+    frame=getframe(gcf);
+    writeVideo(aviObj,frame);
+%     pause
 end
 
 
 
 
-
+close(aviObj);
 save('position_estimates6.mat', 'Q_loc_estimateX', 'Q_loc_estimateY')
 
 
