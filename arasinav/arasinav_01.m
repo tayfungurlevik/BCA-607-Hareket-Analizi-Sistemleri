@@ -2,7 +2,6 @@
 dosya_on_ad='fettah_sut2_C001H001S0001';
 dosya_uzanti='.jpg';
 bos=zeros(105,2);
-
 noktalar.ayak_ucu=bos;
 noktalar.topuk=bos;
 noktalar.bilek=bos;
@@ -71,34 +70,39 @@ temp(48:51,:)=eklenecekler;
 temp(52:end,:)=noktalar.kalca(48:end,:);
 noktalar.kalca=temp;
 %% Video goruntulerinin olusturulmasi islemi
-aviobj=VideoWriter('sut.mp4','MPEG-4');
-aviobj.FrameRate=25;
-aviobj.Quality=100;
-open(aviobj);
-renk='ygbmc';
-cell_noktalar=struct2cell(noktalar);
-for n=1:105
-    dosya_adi=strcat(dosya_on_ad,sprintf( '%06d', n ) ,dosya_uzanti);
-    RGB=imread(dosya_adi);
-    imshow(RGB);
-    hold on
-    for i=1:length(cell_noktalar)
-        centroid=cell_noktalar{i};
-        x=centroid(n,1);
-        y=centroid(n,2);
-        plot(x,y,'O','Color',renk(i));
-        text(x+5,y,sprintf('%3.3f,%3.3f',x,y),'Color',renk(i),'FontSize',12);
+video=false;
+if video
+    aviobj=VideoWriter('sut.mp4','MPEG-4');
+    aviobj.FrameRate=25;
+    aviobj.Quality=100;
+    open(aviobj);
+    renk='ygbmc';
+    cell_noktalar=struct2cell(noktalar);
+    for n=1:105
+        dosya_adi=strcat(dosya_on_ad,sprintf( '%06d', n ) ,dosya_uzanti);
+        RGB=imread(dosya_adi);
+        imshow(RGB);
+        hold on
+        for i=1:length(cell_noktalar)
+            centroid=cell_noktalar{i};
+            x=centroid(n,1);
+            y=centroid(n,2);
+            plot(x,y,'O','Color',renk(i));
+            text(x+5,y,sprintf('%3.3f,%3.3f',x,y),'Color',renk(i),'FontSize',12);
+        end
+        for i=1:length(cell_noktalar)-1
+            centroid=cell_noktalar{i};
+            centroid2=cell_noktalar{i+1};
+            line([centroid(n,1),centroid2(n,1)],[centroid(n,2),centroid2(n,2)],'Color','white','LineStyle','--');
+        end
+        frame=getframe(gcf);
+        writeVideo(aviobj,frame);
+        hold off
     end
-    for i=1:length(cell_noktalar)-1
-        centroid=cell_noktalar{i};
-        centroid2=cell_noktalar{i+1};
-        line([centroid(n,1),centroid2(n,1)],[centroid(n,2),centroid2(n,2)],'Color','white','LineStyle','--');
-    end
-    frame=getframe(gcf);
-    writeVideo(aviobj,frame);
-    hold off
 end
-close(aviobj);
+if video
+    close(aviobj);
+end
 %% Kalibrasyon islemi
 kalibRGB=imread('kalibrasyon.jpg');
 I=rgb2gray(kalibRGB);
@@ -167,11 +171,16 @@ gercek_konumlar.topuk=calculate_reconformal(x,filtered_topuk);
 gercek_konumlar.bilek=calculate_reconformal(x,filtered_bilek);
 gercek_konumlar.diz=calculate_reconformal(x,filtered_diz);
 gercek_konumlar.kalca=calculate_reconformal(x,filtered_kalca);
-hizlar.ayakucu=velocity_central_diff(gercek_konumlar.ayakucu,delta_t)/100;
-hizlar.topuk=velocity_central_diff(gercek_konumlar.topuk,delta_t)/100;
-hizlar.bilek=velocity_central_diff(gercek_konumlar.bilek,delta_t)/100;
-hizlar.diz=velocity_central_diff(gercek_konumlar.diz,delta_t)/100;
-hizlar.kalca=velocity_central_diff(gercek_konumlar.kalca,delta_t)/100;
+hizlar.ayakucu=velocity_central_diff(gercek_konumlar.ayakucu/100,delta_t);
+hizlar.topuk=velocity_central_diff(gercek_konumlar.topuk/100,delta_t);
+hizlar.bilek=velocity_central_diff(gercek_konumlar.bilek/100,delta_t);
+hizlar.diz=velocity_central_diff(gercek_konumlar.diz/100,delta_t);
+hizlar.kalca=velocity_central_diff(gercek_konumlar.kalca/100,delta_t);
+ivmeler.ayakucu=accl4v_central_diff(hizlar.ayakucu,delta_t);
+ivmeler.topuk=accl4v_central_diff(hizlar.topuk,delta_t);
+ivmeler.bilek=accl4v_central_diff(hizlar.bilek,delta_t);
+ivmeler.diz=accl4v_central_diff(hizlar.diz,delta_t);
+ivmeler.kalca=accl4v_central_diff(hizlar.kalca,delta_t);
 %% grafikler
 %pozisyon grafigi
 plot(gercek_konumlar.ayakucu(:,1),gercek_konumlar.ayakucu(:,2));
@@ -243,6 +252,81 @@ legend('Kalca Vx','Kalca Vy');
 grid on;
 saveas(gcf,'KalcaHiz.png');
 hold off
+%AyakUcu ivme grafigi   
+plot(3:length(ivmeler.ayakucu),ivmeler.ayakucu(3:end,1));
+hold on
+plot(3:length(ivmeler.ayakucu),ivmeler.ayakucu(3:end,2));
+title('Ivme AyakUcu (m/s/s)');
+xlabel('Frames');
+ylabel('m/s/s');
+legend('AyakUcu Ax','AyakUcu Ay');
+grid on;
+saveas(gcf,'AyakUcuIvme.png');
+hold off
+%Topuk ivme grafigi   
+plot(3:length(ivmeler.topuk),ivmeler.topuk(3:end,1));
+hold on
+plot(3:length(ivmeler.topuk),ivmeler.topuk(3:end,2));
+title('Ivme Topuk (m/s/s)');
+xlabel('Frames');
+ylabel('m/s/s');
+legend('Topuk Ax','Topuk Ay');
+grid on;
+saveas(gcf,'TopukIvme.png');
+hold off
+%Bilek ivme grafigi   
+plot(3:length(ivmeler.bilek),ivmeler.bilek(3:end,1));
+hold on
+plot(3:length(ivmeler.bilek),ivmeler.bilek(3:end,2));
+title('Ivme Bilek (m/s/s)');
+xlabel('Frames');
+ylabel('m/s/s');
+legend('Bilek Ax','Bilek Ay');
+grid on;
+saveas(gcf,'BilekIvme.png');
+hold off
+%Diz ivme grafigi   
+plot(3:length(ivmeler.diz),ivmeler.diz(3:end,1));
+hold on
+plot(3:length(ivmeler.diz),ivmeler.diz(3:end,2));
+title('Ivme Diz (m/s/s)');
+xlabel('Frames');
+ylabel('m/s/s');
+legend('Diz Ax','Diz Ay');
+grid on;
+saveas(gcf,'DizIvme.png');
+hold off
+%Kalca ivme grafigi   
+plot(3:length(ivmeler.kalca),ivmeler.kalca(3:end,1));
+hold on
+plot(3:length(ivmeler.kalca),ivmeler.kalca(3:end,2));
+title('Ivme Kalca (m/s/s)');
+xlabel('Frames');
+ylabel('m/s/s');
+legend('Kalca Ax','Kalca Ay');
+grid on;
+saveas(gcf,'KalcaIvme.png');
+hold off
+%% Dizin acisal hizinin hesaplanmasi
+
+angle=atan((gercek_konumlar.kalca(:,2)-gercek_konumlar.diz(:,2))/...
+    (gercek_konumlar.kalca(:,1)-gercek_konumlar.diz(:,1)));
+angle=angle(:,105);
+acisal_hizlar=zeros(105,1);
+for i=1:104
+   acisal_hizlar(i,1)=(angle(i+1,1)-angle(i,1))/delta_t;
+end
+plot(1:length(acisal_hizlar)-1,acisal_hizlar(1:end-1,1));
+hold on
+
+title('Diz Acisal Hiz rad/s');
+xlabel('Frames');
+ylabel('rad/s');
+
+grid on;
+saveas(gcf,'Diz Acisal Hiz.png');
+hold off
+
 
 
 
