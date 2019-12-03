@@ -117,7 +117,7 @@ BW(:,1:135)=0;
 BW=medfilt2(BW,[3 3]);
 
 BW = bwareaopen(BW,50);
-imshow(BW)
+imshow(kalibRGB)
 hold on
 [B,L]=bwboundaries(BW,'noholes');
 kalib_stats=regionprops(BW,'Centroid');
@@ -176,11 +176,11 @@ hizlar.topuk=velocity_central_diff(gercek_konumlar.topuk/100,delta_t);
 hizlar.bilek=velocity_central_diff(gercek_konumlar.bilek/100,delta_t);
 hizlar.diz=velocity_central_diff(gercek_konumlar.diz/100,delta_t);
 hizlar.kalca=velocity_central_diff(gercek_konumlar.kalca/100,delta_t);
-ivmeler.ayakucu=accl4v_central_diff(hizlar.ayakucu,delta_t);
-ivmeler.topuk=accl4v_central_diff(hizlar.topuk,delta_t);
-ivmeler.bilek=accl4v_central_diff(hizlar.bilek,delta_t);
-ivmeler.diz=accl4v_central_diff(hizlar.diz,delta_t);
-ivmeler.kalca=accl4v_central_diff(hizlar.kalca,delta_t);
+ivmeler.ayakucu=accl4s_central_diff(gercek_konumlar.ayakucu/100,delta_t);
+ivmeler.topuk=accl4s_central_diff(gercek_konumlar.topuk/100,delta_t);
+ivmeler.bilek=accl4s_central_diff(gercek_konumlar.bilek/100,delta_t);
+ivmeler.diz=accl4s_central_diff(gercek_konumlar.diz/100,delta_t);
+ivmeler.kalca=accl4s_central_diff(gercek_konumlar.kalca/100,delta_t);
 %% grafikler
 %pozisyon grafigi
 plot(gercek_konumlar.ayakucu(:,1),gercek_konumlar.ayakucu(:,2));
