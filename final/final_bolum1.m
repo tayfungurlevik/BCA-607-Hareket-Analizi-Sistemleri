@@ -7,6 +7,17 @@ M2=vicon_parsed(:,5:7);
 M3=vicon_parsed(:,8:10);
 M4=vicon_parsed(:,11:13);
 M5=vicon_parsed(:,14:16);
+%% Yorunge cizdirme islemi
+plot3(M1(:,1),M1(:,3),M1(:,2),'--r')
+grid on
+axis equal
+hold on
+plot3(M2(:,1),M2(:,3),M2(:,2),'--g')
+plot3(M3(:,1),M3(:,3),M3(:,2),'--b')
+plot3(M4(:,1),M4(:,3),M4(:,2),'--y')
+plot3(M5(:,1),M5(:,3),M5(:,2),'--c')
+%% Video olusturma islemi
+
 video=true;
 if video
    aviObj=VideoWriter('final.mp4','MPEG-4');
@@ -48,6 +59,21 @@ if video
    close(aviObj); 
 end
 %% Roll,pitch ve yaw degerlerinin hesaplanmasi
+
+P1=M1(1,:);
+P2=M3(1,:);
+P3=M5(1,:);
+[P1(1,2),P1(1,3)]=deal(P1(1,3),P1(1,2));
+[P2(1,2),P2(1,3)]=deal(P2(1,3),P2(1,2));
+[P3(1,2),P3(1,3)]=deal(P3(1,3),P3(1,2));
+v1=P2-P1;
+v2=cross(P3-P1,v1);
+i=v1/norm(v1);
+j=v2/norm(v2);
+k=cross(i,j);
+CalCS=[i(1),j(1),k(1);i(2),j(2),k(2);i(3),j(3),k(3)];
+RTM=(inv(CalCS))*eye(3);
+%% Roll,pitch ve yaw degerlerinin hesaplanmasi
 roll=zeros(1,length(frames));
 pitch=zeros(1,length(frames));
 yaw=zeros(1,length(frames));
@@ -63,13 +89,28 @@ for n=1:length(frames)
     i=v1/norm(v1);
     j=v2/norm(v2);
     k=cross(i,j);
-    R=[i(1),j(1),k(1);i(2),j(2),k(2);i(3),j(3),k(3)];
-
-    eul=rotm2eul(R,'XYZ');
+    PCS=[i(1),j(1),k(1);i(2),j(2),k(2);i(3),j(3),k(3)];
+    SCS=PCS*RTM;
+    eul=rotm2eul(SCS,'XYZ');
     roll(n)=eul(1);
     pitch(n)=eul(2);
     yaw(n)=eul(3);
      
 end
+%% grafiklerin elde edilmesi
 
 plot(1:length(frames),radtodeg(roll));
+title('Roll');
+xlabel('Time (s)');
+ylabel('Degree');
+saveas(gcf,'roll.png');
+plot(1:length(frames),radtodeg(pitch));
+title('Pitch');
+xlabel('Time (s)');
+ylabel('Degree');
+saveas(gcf,'pitch.png');
+plot(1:length(frames),radtodeg(yaw));
+title('Yaw');
+xlabel('Time (s)');
+ylabel('Degree');
+saveas(gcf,'yaw.png');

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace ViconParser
@@ -16,7 +12,7 @@ namespace ViconParser
             {
                 using (StreamWriter writer = new StreamWriter("vicon_parsed.txt"))
                 {
-                    
+
                     do
                     {
                         string line = reader.ReadLine();
@@ -25,7 +21,7 @@ namespace ViconParser
                             int frameNumber = int.Parse(line.Split(':')[1].Trim());
                             Console.WriteLine(frameNumber);
                             writer.Write(frameNumber + ",");
-                            
+
                         }
                         if (line.Contains("Markers (5):"))
                         {
@@ -59,11 +55,8 @@ namespace ViconParser
                         }
                     } while (!reader.EndOfStream);
                 }
-               
-                
-                
             }
-            
+
         }
     }
 }
