@@ -16,6 +16,7 @@ plot3(M2(:,1),M2(:,3),M2(:,2),'--g')
 plot3(M3(:,1),M3(:,3),M3(:,2),'--b')
 plot3(M4(:,1),M4(:,3),M4(:,2),'--y')
 plot3(M5(:,1),M5(:,3),M5(:,2),'--c')
+hold off
 %% Video olusturma islemi
 
 video=true;
@@ -55,6 +56,7 @@ for i=1:length(frames)
     end
     hold off
 end
+
 if video
    close(aviObj); 
 end
