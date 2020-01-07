@@ -35,7 +35,7 @@ ylabel('|P1(f)|')
 
 %% ivmenin filtrelenmesi
 
-fc=0.9;
+fc=2;
 fs=1/0.02;
 [c,d]=butter(1,fc/(fs/2),'low');
 
@@ -85,8 +85,8 @@ saveas(gcf,'filtrelenmis_ivme_2.png');
 
 
 
- s=cumtrapz(t_a,v);
- plot(t_a,s);
+%  s=cumtrapz(t_a,v);
+%  plot(t_a,s);
 
 
 % fcv=1;
