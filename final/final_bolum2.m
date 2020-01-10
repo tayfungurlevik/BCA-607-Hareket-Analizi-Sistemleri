@@ -35,7 +35,7 @@ ylabel('|P1(f)|')
 
 %% ivmenin filtrelenmesi
 
-fc=2;
+fc=1;
 fs=1/0.02;
 [c,d]=butter(1,fc/(fs/2),'low');
 
@@ -47,6 +47,7 @@ plot(t_a,a_no_g_filtered);
 title('No Gravity - low pass filtered');
 xlabel('Time(s)');
 ylabel('Acceleration (m/s2)');
+ylim([-10 10]);
 saveas(gcf,'filtrelenmis_ivme.png');
 %% FFT incelemesi bileske ivme
 Fs = 50;            % Sampling frequency                    
@@ -83,14 +84,20 @@ saveas(gcf,'filtrelenmis_ivme_2.png');
  v=cumtrapz(t_a,a_no_g_filtered);
  plot(t_a,v);
 
+%% position-with drift
 
+  s=cumtrapz(t_a,v);
+  plot(t_a,s);
 
-%  s=cumtrapz(t_a,v);
-%  plot(t_a,s);
+%% filter velocity-with drift
+fcv=0.5;
+[e,f]=butter(2,fcv/(fs/2),'high');
+v_filtered=filter(e,f,v);
 
+plot(t_a,v_filtered);
+ylim([-2 2]);
 
-% fcv=1;
-% [e,f]=butter(2,fcv/(fs/2),'high');
-% v=filter(e,f,v);
-% s=cumtrapz(t_a,v);
-% plot(t_a,v);
+%% position no drift
+s_filtered=cumtrapz(t_a,v_filtered);
+plot(t_a,s_filtered);
+ylim([-0.5 0.5]);
