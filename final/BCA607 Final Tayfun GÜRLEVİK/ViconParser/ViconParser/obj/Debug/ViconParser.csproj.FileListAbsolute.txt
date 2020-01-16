@@ -1,0 +1,7 @@
+D:\BCA 607 Hareket Analizi Sistemleri\final\ViconParser\ViconParser\bin\Debug\ViconParser.exe.config
+D:\BCA 607 Hareket Analizi Sistemleri\final\ViconParser\ViconParser\bin\Debug\ViconParser.exe
+D:\BCA 607 Hareket Analizi Sistemleri\final\ViconParser\ViconParser\bin\Debug\ViconParser.pdb
+D:\BCA 607 Hareket Analizi Sistemleri\final\ViconParser\ViconParser\obj\Debug\ViconParser.csprojAssemblyReference.cache
+D:\BCA 607 Hareket Analizi Sistemleri\final\ViconParser\ViconParser\obj\Debug\ViconParser.exe
+D:\BCA 607 Hareket Analizi Sistemleri\final\ViconParser\ViconParser\obj\Debug\ViconParser.pdb
+D:\BCA 607 Hareket Analizi Sistemleri\final\ViconParser\ViconParser\bin\Debug\vicon_all_labelled.txt
